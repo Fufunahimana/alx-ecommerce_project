@@ -1,1 +1,6 @@
 {% url 'category' 'ML '%}
+{% url 'category-brand' val.title %}
+{% url 'category-brand' val.title %}
+{% url 'product-detail' prod.id %}
+cd F:\Ecommerce_project\alx-ecommerce_project\ecommerce
+python manage.py runserver

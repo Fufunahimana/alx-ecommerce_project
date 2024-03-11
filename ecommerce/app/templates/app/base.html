@@ -33,22 +33,23 @@
                   Products
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Milk</a></li>
-                  <li><a class="dropdown-item" href="#">Curd</a></li>
-                  <li><a class="dropdown-item" href="#">MilkShake</a></li>
-                  <li><a class="dropdown-item" href="#">Lassi</a></li>
-                  <li><a class="dropdown-item" href="#">Ghee</a></li>
-                  <li><a class="dropdown-item" href="#">Panneer</a></li>
-                  <li><a class="dropdown-item" href="#">Cheese</a></li>
-                  <li><a class="dropdown-item" href="#">Ice-creams</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'CR' %}">Curd</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'ML' %}">Milk</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'LS' %}">Lassi</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'MS' %}">MilkShake</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'PN' %}">Panneer</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'GH' %}">Ghee</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'CZ' %}">Cheese</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'IC' %}">Ice-creams</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'KF' %}">KUFFI</a></li>
                   
                 </ul>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-white" href="#">About us</a>
+                <a class="nav-link text-white" href="{% url 'about' %}">About us</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-white" href="#">Contact</a>
+                <a class="nav-link text-white" href="{% url 'contact'%}">Contact</a>
               </li>
               
               <li class="nav-item">
