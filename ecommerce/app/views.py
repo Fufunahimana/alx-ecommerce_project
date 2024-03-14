@@ -4,6 +4,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 from . models import Product
+from . forms import CustomerProfileForm, CustomerRegistrationForm
+from django.contrib import messages
+from django.shortcuts import redirect
 
 
 # Create your views here.
@@ -15,6 +18,9 @@ def about(request):
 
 def contact(request):
     return render(request,"app/contact.html")
+
+def success_view(request):
+    return render(request, 'app/success.html')
 
 
 class CategoryView(View):
@@ -33,4 +39,29 @@ class ProductDetail(View):
     def get(self,request, pk):
         product = Product.objects.get(pk = pk )
         return render(request,"app/productdetail.html",locals())
+    
+class CustomerRegistrationView(View):
+    def get(self, request):
+        form = CustomerRegistrationForm()
+        return render(request, 'app/customerregistration.html', {'form': form})
+
+    def post(self, request):
+        form = CustomerRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Congratulation, User Registered Successfully")
+            return redirect('success_url')  # Redirect to a success page
+        else:
+            messages.warning(request, "Invalid Input Data")
+        return render(request, 'app/customerregistration.html', {'form': form})
+
+class ProfileView(View):
+    def get(self,request):
+        form =CustomerProfileForm()
+        return render(request,'app/profile.html',locals())
+    
+    def post(self,request):
+        return render(request,'app/profile.html',locals())
         
+    
+    

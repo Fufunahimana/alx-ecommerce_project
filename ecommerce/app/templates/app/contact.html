@@ -2,9 +2,8 @@
 {% load static %}
 {% block title %}About{% endblock title %}
 
-{% block banner_slider %}
 
-{% block main-content %}
+{% block banner_slider %}
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
           <div class="carousel-item active">
@@ -32,5 +31,16 @@
 
 {% endblock banner_slider %}
 <br><br>
-
+{% block main-content %}
+  <div class="container mt-3">
+      <b>
+        <h2 class="text-center">Contact Us</h2>
+      <b>
+    <div class=" row container">
+      <p class="fs-4 text-center">Adress: </p>
+      <p class="fs-4 text-center">Contact: </p>
+      <p class="fs-4 text-center">Email: </p>     
+    </div>
+  </div>
+<br><br>
 {% endblock main-content %}
