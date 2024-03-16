@@ -9,9 +9,9 @@
                 <h3>Success</h3>
                 <p>Your registration was successful. You will be redirected back to the registration page shortly.</p>
                 <!-- You can include any additional content here -->
-                <div class="text-center text-primary fw-bold">
-                    <small> <a href="{% url 'customerregistration' %}" class="text-danger">Register</a></small>
-                </div>
+                <div>
+                    <iframe src="https://giphy.com/embed/ibolLe3mOqHE3PQTtk" width="200" height="200" frameBorder="0" class="giphy-embed" allowfullscreen></iframe>
+                </div> 
             </div>
         </div>
     </div>
@@ -19,6 +19,6 @@
     <script>
         setTimeout(function() {
             window.location.href = "{% url 'customerregistration' %}";
-        }, 10); // Redirect after 1 seconds (adjust as needed)
+        }, 5000); // Redirect after 1 seconds (adjust as needed)
     </script>
 {% endblock main-content %}

@@ -7,6 +7,20 @@ from . models import Product
 from . forms import CustomerProfileForm, CustomerRegistrationForm
 from django.contrib import messages
 from django.shortcuts import redirect
+from . models import Customer
+from django.views.generic import TemplateView
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
+from .forms import MyPasswordChangeForm
+from django.core.mail import send_mail
+
+
+class PasswordChangeDoneView(TemplateView):
+    template_name = 'app/passwordchangedone.html'
+
+class MyPasswordChangeView(PasswordChangeView):
+    template_name = 'app/changepassword.html'
+    form_class = MyPasswordChangeForm
+    success_url = '/passwordchangedone'
 
 
 # Create your views here.
@@ -61,7 +75,52 @@ class ProfileView(View):
         return render(request,'app/profile.html',locals())
     
     def post(self,request):
-        return render(request,'app/profile.html',locals())
+        form =CustomerProfileForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            name = form.cleaned_data['name']
+            locality = form.cleaned_data['locality']
+            city = form.cleaned_data['city']
+            mobile = form.cleaned_data['mobile']
+            state = form.cleaned_data['state']
+            zipcode = form.cleaned_data['zipcode']
+            
+            reg=Customer(user=user,name=name, locality=locality, mobile=mobile,city=city, state=state, zipcode=zipcode)
+            reg.save()
+            messages.success(request, "Congratulation, Profile Saved Successfully")
+            
+        else:
+            messages.warning(request, "Invalid Input Data")
+        return render(request, 'app/profile.html', locals())
+    
+def address(request):
+    add = Customer.objects.filter(user=request.user)
+    return render(request,'app/address.html',locals())
+
+class updateAddress(View):
+    def get(self,request,pk):
+        add = Customer.objects.get(pk=pk)
+        form = CustomerProfileForm(instance=add) 
+        return render(request,'app/updateAddress.html',locals( ))      
+    def post(self,request,pk):
+       form = CustomerProfileForm(request.POST)
+       if form.is_valid():
+              add = Customer.objects.get(pk=pk)
+              add.name = form.cleaned_data['name']
+              add.locality = form.cleaned_data['locality']
+              add.city = form.cleaned_data['city']
+              add.mobile=form.cleaned_data['mobile']
+              add.state = form.cleaned_data['state']
+              add.zipcode = form.cleaned_data['zipcode']
+              add.save()
+              messages.success(request, "Congratulations! Profile Update Successfully")
+       else:     
+          messages.warning(request, "Invalid Input Data") 
+       return redirect("address")
+
+class CustomLogoutView(View):
+    def get(self, request, *args, **kwargs):
+        return redirect('login')         
         
     
     
