@@ -1,17 +1,20 @@
 from django.db.models import Count
 from urllib import request
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views import View
-from . models import Product
-from . forms import CustomerProfileForm, CustomerRegistrationForm
+from . models import Cart,Product,Customer
+from . forms import CustomerProfileForm, CustomerRegistrationForm,LoginForm
 from django.contrib import messages
-from django.shortcuts import redirect
-from . models import Customer
 from django.views.generic import TemplateView
-from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView,LoginView
 from .forms import MyPasswordChangeForm
 from django.core.mail import send_mail
+from django.contrib.auth import logout
+from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class PasswordChangeDoneView(TemplateView):
@@ -117,10 +120,106 @@ class updateAddress(View):
        else:     
           messages.warning(request, "Invalid Input Data") 
        return redirect("address")
+   
+class CustomLoginView(LoginView):
+    template_name = 'app/login.html'
+    authentication_form = LoginForm
 
-class CustomLogoutView(View):
+class CustomLogoutView(TemplateView):
     def get(self, request, *args, **kwargs):
+        logout(request)
         return redirect('login')         
+    
+    
+def add_to_cart(request):
+    user = request.user
+    product_id = request.GET.get('prod_id')
+    product = Product.objects.get(id=product_id)
+    Cart(user=user,product=product).save()
+    return redirect("/cart")
+
+def show_cart(request):
+    user = request.user
+    cart = Cart.objects.filter(user=user)
+    amount = 0
+    for p in cart:
+        value = p.quantity * p.product.discounted_price
+        amount = amount + value
+    totalamount = amount + 40
+     
+    return render(request,'app/addtocart.html',locals())
+
+def plus_cart(request): 
+    if request.method == 'GET':
+        prod_id = request.GET.get('prod_id')
+        user = request.user
+        try:
+            cart_item = Cart.objects.get(product_id=prod_id, user=user)
+        except ObjectDoesNotExist:
+            # Handle the case where the cart item does not exist
+            return JsonResponse({'error': 'Cart item not found'}, status=404)
         
-    
-    
+        # Increase the quantity of the cart item by 1
+        cart_item.quantity += 1
+        cart_item.save()  # Save the updated cart item
+        
+        # Calculate the total amount
+        amount = sum(item.quantity * item.product.discounted_price for item in Cart.objects.filter(user=user))
+        totalamount = amount + 40
+        
+        # Prepare the response data
+        data = {
+            'quantity': cart_item.quantity,
+            'amount': amount,
+            'totalamount': totalamount
+        }
+        
+        return JsonResponse(data)
+
+def minus_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET.get('prod_id')
+        user = request.user
+        try:
+            cart_item = Cart.objects.get(product_id=prod_id, user=user)
+        except ObjectDoesNotExist:
+            return JsonResponse({'error': 'Cart item not found'}, status=404)
+        
+        cart_item.quantity -= 1
+        if cart_item.quantity < 1:
+            cart_item.delete()
+            return JsonResponse({'message': 'Cart item removed successfully'})
+        
+        cart_item.save()
+        
+        # Calculate the total amount
+        amount = sum(item.quantity * item.product.discounted_price for item in Cart.objects.filter(user=user))
+        totalamount = amount + 40
+        
+        data = {
+            'quantity': cart_item.quantity,
+            'amount': amount,
+            'totalamount': totalamount
+        }
+        return JsonResponse(data)
+
+def remove_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET.get('prod_id')
+        user = request.user
+        try:
+            cart_item = Cart.objects.filter(product_id=prod_id, user=request.user).first()
+            if cart_item:
+                cart_item.delete()
+                # Recalculate the total amount after removing the cart item
+                amount = sum(item.quantity * item.product.discounted_price for item in Cart.objects.filter(user=user))
+                totalamount = amount + 40
+                data = {
+                    'amount': amount,
+                    'totalamount': totalamount
+                }
+                return JsonResponse(data)
+            else:
+                return JsonResponse({'error': 'Cart item not found'}, status=404)
+        except Cart.DoesNotExist:
+            return JsonResponse({'error': 'Cart item not found'}, status=404)

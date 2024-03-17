@@ -1,13 +1,36 @@
-$('.plus-cart').click(function(){ 
+$('#slider1, #slider2, #slider3').owlCarousel({
+    loop: true,
+    margin: 20,
+    responsiveClass: true,
+    responsive: {
+        0: {
+            items: 2,
+            nav: false,
+            autoplay: true,
+        },
+        600: {
+            items: 4,
+            nav: true,
+            autoplay: true,
+        },
+        1000: {
+            items: 6,
+            nav: true,
+            loop: true,
+            autoplay: true,
+        }
+    }
+})
+  $('.plus-cart').click(function(){
     var id = $(this).attr("pid").toString();
     var eml = $(this).siblings("#quantity");
-    console.log("pid =", id);
-    $.ajax({ 
+    $.ajax({
         type: "GET",
-        url: "/pluscart/",
-        data: { prod_id: id },
+        url: "/add-to-cart",
+        data: {
+            prod_id: id
+        },
         success: function(data) {
-            console.log("data =", data);
             eml.text(data.quantity);
             $("#amount").text(data.amount);
             $("#totalamount").text(data.totalamount);
@@ -15,16 +38,16 @@ $('.plus-cart').click(function(){
     });
 });
 
-$('.minus-cart').click(function(){ 
+$('.minus-cart').click(function(){
     var id = $(this).attr("pid").toString();
     var eml = $(this).siblings("#quantity");
-    console.log("pid =", id);
-    $.ajax({ 
+    $.ajax({
         type: "GET",
-        url: "/minuscart/",
-        data: { prod_id: id },
+        url: "/minuscart",
+        data: {
+            prod_id: id
+        },
         success: function(data) {
-            console.log("data =", data);
             eml.text(data.quantity);
             $("#amount").text(data.amount);
             $("#totalamount").text(data.totalamount);
@@ -32,16 +55,16 @@ $('.minus-cart').click(function(){
     });
 });
 
-$('.remove-cart').click(function(){ 
+$('.remove-cart').click(function(){
     var id = $(this).attr("pid").toString();
     var row = $(this).closest('.row');
-    console.log("pid =", id);
-    $.ajax({ 
+    $.ajax({
         type: "GET",
-        url: "/removecart/",
-        data: { prod_id: id },
+        url: "/removecart",
+        data: {
+            prod_id: id
+        },
         success: function(data) {
-            console.log("data =", data);
             $("#amount").text(data.amount);
             $("#totalamount").text(data.totalamount);
             row.remove();
