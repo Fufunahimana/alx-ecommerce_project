@@ -132,3 +132,6 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
+RAZOR_KEY_ID = "rzp_test_sJWjGPA783roSz"
+RAZOR_KEY_SECRET = "mp453D5rt6dfQxwWQ5xabgTd"
+
